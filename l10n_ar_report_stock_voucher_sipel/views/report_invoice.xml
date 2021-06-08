@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+        <template id="page_top" inherit_id="l10n_ar_report_invoice_aitic.page_top">
+            <xpath expr="//img[@t-if='o.company_id.logo']" position="replace">
+                <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" class="float-left mt-1 mb-2 ml-1" alt="Logo" style="height:auto; max-width: 200px; padding-top: 5px;"/>
+            </xpath>
+        </template>
+</odoo>

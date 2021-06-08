@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ar_remito_paperformat" model="report.paperformat">
+        <field name="name">Formato Remito</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">10</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">7</field>
+        <field name="margin_right">7</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">10</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <report
+            string="Remito Pre-Impreso"
+            id="l10n_ar_action_report_delivery_sipel"
+            model="stock.picking"
+            report_type="qweb-pdf"
+            name="l10n_ar_report_stock_voucher_sipel.report_remito"
+            file="l10n_ar_report_stock_voucher_sipel.report_remito"
+            paperformat="l10n_ar_remito_paperformat"
+    />
+
+    <template id="report_remito_doc">
+        <t t-call="web.html_container">
+            <t t-set="o" t-value="o.with_context({'lang':o.partner_id.lang})" />
+            <t t-call="web.basic_layout">
+                <div class="page" style="font-size:12px;">
+                    <div class="row" align="right" style="margin-right:90px;">
+                        <div class="col-xs-12"  style="margin-top:90px;">
+                            <strong><span t-esc="o.get_datetoday()"/></strong>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:110px;">
+                        <strong><span t-esc="o.partner_id.name.upper() or ''" style="padding-left:80px;"/></strong>
+                    </div>
+                    <div class="row" style="margin-top:5px;">
+                        <div class="col-xs-6"  style="padding-left:80px;">
+                            <strong><span t-esc="o.partner_id.street"/></strong>
+                        </div>
+                        <div class="col-xs-6" style="padding-left:50px">
+                            <strong><strong>CUIT: </strong><span t-esc="o.partner_id.vat"/></strong>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:5px;">
+                        <div class="col-xs-6"  style="padding-left:80px;">
+                            <span><strong>Telf.: </strong></span><strong><span t-field="o.partner_id.phone"/></strong>
+                        </div>
+                        <div class="col-xs-6" style="padding-left: 50px">
+                            <strong><span t-esc="o.partner_id.l10n_ar_afip_responsibility_type_id.name or ''"/></strong>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:5px;">
+                        <div class="col-xs-6"  style="padding-left:80px;">
+
+                        </div>
+                        <div class="col-xs-6" style="padding-left: 50px">
+                            <span><strong>Documento Origen: </strong></span><strong><span t-field="o.origin"/></strong>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:5px;">
+                        <div class="col-xs-6"  style="padding-left:80px;">
+
+                        </div>
+                        <div class="col-xs-6" style="padding-left: 50px">
+                            <span><strong>Referencia: </strong></span><strong><span t-field="o.carrier_tracking_ref"/></strong>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:5px;">
+                        <div class="col-xs-6"  style="padding-left:80px;">
+
+                        </div>
+                        <div class="col-xs-6" style="padding-left: 50px">
+                            <span><strong>Orden de Compra Cliente: </strong></span><strong><span t-esc="o.client_purchase_ref"/></strong>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:100px;">
+                        <div class="col-xs-12" style="height:510px; padding-left:80px;">
+                            <table class="table table-condensed mt48" >
+                                <tbody>
+                                    <tr t-foreach="o.get_line_remittance()" t-as="line">
+                                        <td width="25%">
+                                            <strong><span t-esc="line['qty']"/></strong>
+                                            <strong><span t-esc="line['product_uom']"/></strong>
+                                        </td>
+                                        <td width="25%" class="text-center">
+                                            <strong><span t-esc="line['product']"/></strong>
+                                        </td>
+                                        <td width="50%">
+                                            <strong><span t-esc="line['product_name'].upper()"/></strong>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col-xs-8"  style="padding-left:80px;">
+                            <span t-if="o.transporter_id">
+                                <strong><span t-esc="o.transporter_id.name.upper()" style="margin-left:80px;"/></strong><br/>
+                                <strong><span t-esc="o.transporter_id.vat" style="margin-left:80px;"/></strong><br/>
+                                <strong><p t-esc="o.get_addr(o.transporter_id)" style="margin-left:80px;"/></strong><br/>
+                            </span>
+                        </div>
+                        <div class="col-xs-4" style="padding-left: 50px;margin-top:-35px;">
+                            <strong><span t-esc="o.number_of_packages" style="margin-left:80px;"/></strong>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col-xs-8"  style="padding-left:80px;">
+
+                        </div>
+                        <div class="col-xs-4" style="padding-left: 50px;margin-top:-20px;">
+                            <strong><span t-esc="o.declared_value" style="margin-left:80px;"/></strong>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_remito">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="l10n_ar_report_stock_voucher_sipel.report_remito_doc" t-lang="o.partner_id.lang"/>
+        </t>
+    </template>
+</odoo>
